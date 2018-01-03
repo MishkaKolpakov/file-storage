@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        p {
+            font-family: Georgia,serif;
+            font-size: 120%;
+        }
+    </style>
+</head>
+<body>
+<p>
+    Dear <span th:text="${userName}"></span>,<br/><br/>
+    Your account on our service was disabled.<br/><br/>
+    Best regards,<br/>
+    Administration
+</p>
+
+</body>
+</html>

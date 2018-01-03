@@ -1,0 +1,109 @@
+<div class="container">
+  <form class="form-horizontal" novalidate [formGroup]="registerForm" (ngSubmit)="onRegisterSubmit()">
+
+    <div class="form-group ">
+      <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-user"></i></div>
+            <input type="text"
+                   class="form-control"
+                   id="firstname"
+                   placeholder="First Name"
+                   formControlName="firstname">
+          </div>
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+    </div>
+
+    <div class="form-group ">
+      <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-male"></i></div>
+            <input type="text"
+                   class="form-control"
+                   id="lastname"
+                   placeholder="Last Name"
+                   formControlName="lastname">
+          </div>
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+    </div>
+
+    <div class="form-group ">
+      <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-envelope"></i></div>
+            <input type="email"
+                   class="form-control"
+                   id="email"
+                   placeholder="Email"
+                   formControlName="email">
+          </div>
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+    </div>
+
+    <div class="form-group ">
+      <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-lock"></i></div>
+            <input type="password"
+                   class="form-control"
+                   id="pwd"
+                   placeholder="Password"
+                   formControlName="password">
+          </div>
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+    </div>
+
+    <div class="form-group ">
+      <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-lock"></i></div>
+            <input type="password"
+                   class="form-control"
+                   id="pwd_confirm"
+                   placeholder="Confirm password"
+                   formControlName="password">
+          </div>
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+          <button type="submit" class="btn btn-info btn-block" [disabled]="!registerForm.valid">Register</button>
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+    </div>
+    <br>
+    <br>
+    <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-6">
+        <pre>{{registerForm.value | json}}</pre>
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+  </form>
+
+</div>

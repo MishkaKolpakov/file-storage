@@ -1,0 +1,26 @@
+#!/bin/sh
+DIR=$PWD/liquibase
+mkdir -p ${DIR}
+FILE=${DIR}/liquibase.properties
+echo '# generated liquibase properties' > ${FILE}
+
+host=$1
+database_name=$2
+username=$3
+password=$4
+
+
+echo driver=org.postgresql.Driver >> ${FILE}
+echo url=jdbc:postgresql://${host}:5432/${database_name} >> ${FILE}
+echo username=${username} >> ${FILE}
+echo password=${password} >> ${FILE}
+echo dialect=org.hibernate.dialect.PostgreSQL9Dialect >> ${FILE}
+echo 
+echo Following file has been generated:
+echo
+echo ${FILE}
+echo
+while read line; do
+    echo $line
+done < $FILE
+echo

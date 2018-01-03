@@ -1,0 +1,103 @@
+<div class="container">
+  <h1 class="text-center">Users</h1>
+  <br>
+  <div class="row">
+    <table class="table table-hover">
+      <thead>
+      <tr>
+        <th>#</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th colspan="3">Edit</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let user of users">
+        <th scope="row">{{user.id}}</th>
+        <td>{{user.firstname}}</td>
+        <td>{{user.lastname}}</td>
+        <td>{{user.email}}</td>
+        <td>
+          <a (click)="redirectEditRolePage(user)"><span class="glyphicon glyphicon-pencil"></span></a>{{user.role}}
+        </td>
+        <td>
+          <a type="button" class="btn btn-success" (click)="redirectEditUserPage(user)"><span class="glyphicon glyphicon-edit"></span> User</a>
+        </td>
+        <td>
+          <a type="button" class="btn btn-info" (click)="redirectEditPassPage(user)"><span class="glyphicon glyphicon-edit"></span> Password</a>
+        </td>
+        <td>
+          <div *ngIf="deleted == false">
+            <button type="button" class="btn btn-danger" (click)="deleteUser(user)"><span class="glyphicon glyphicon-remove"></span> Delete</button>
+          </div>
+          <div *ngIf="deleted != false">
+            <button type="button" class="btn btn-danger" (click)="activateUser(user)"> Activate</button>
+          </div>
+        </td>
+      </tr>
+
+      </tbody>
+    </table>
+  </div>
+  <div class="row">
+    <br>
+    <form novalidate [formGroup]="filterForm" (ngSubmit)="onFilter()" >
+
+      <label for="userStatus">User Status:</label>
+      <select id="userStatus" formControlName="userStatus">
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="DELETED">DELETED</option>
+      </select>
+      <br>
+
+      <label for="order">Order:</label>
+      <select id="order" formControlName="order">
+        <option></option>
+        <option value="ASC">ASC</option>
+        <option value="DESC">DESC</option>
+      </select>
+
+      <label for="sortField">Field to sort by:</label>
+      <select id="sortField" formControlName="sortField">
+        <option></option>
+        <option value="ID">ID</option>
+        <option value="firstname">First Name</option>
+        <option value="lastname">Last Name</option>
+        <option value="email">Email</option>
+        <option value="role"> Role</option>
+      </select>
+
+      <label for="page">Page:</label>
+      <select id="page" formControlName="page">
+        <option></option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+      </select>
+
+      <label for="limit">Results on Page:</label>
+      <select id="limit" formControlName="limit">
+        <option></option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="50">50</option>
+      </select>
+
+      <label for="role">Role:</label>
+      <select id="role" formControlName="role">
+        <option></option>
+        <option value="ADMIN">ADMIN</option>
+        <option value="USER">USER</option>
+        <option value="TECH_SUPP">TECH_SUPP</option>
+      </select>
+
+      <button type="submit" class="btn btn-primary"  [disabled]="!filterForm.valid">Filter</button>
+      <pre>{{filterForm.value | json}}</pre>
+    </form>
+  </div>
+</div>
+

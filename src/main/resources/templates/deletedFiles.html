@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        p {
+            font-family: Georgia,serif;
+            font-size: 120%;
+        }
+    </style>
+</head>
+<body>
+<p>
+    Dear <span th:text="${userName}"></span>,<br/><br/>
+    Some of your files were deleted due to it`s expiration.<br/>For more detail information check our web-service<br/><br/>
+    Best regards,<br/>
+    Administration
+</p>
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+<div class="container">
+  <h1 class="text-center">Share File</h1>
+  <br>
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <table class="table table-hover">
+        <tr>
+          <th>File ID</th>
+          <td>{{file.resourceId}}</td>
+        </tr>
+        <tr>
+          <th>Owner ID</th>
+          <td>{{file.ownerId}}</td>
+        </tr>
+        <tr>
+          <th>File Name</th>
+          <td>{{file.fileName}}</td>
+        </tr>
+        <tr>
+          <th>MIME</th>
+          <td>{{file.mime}}</td>
+        </tr>
+        <tr>
+          <th>File Size</th>
+          <td>{{file.fileSize}}</td>
+        </tr>
+        <tr>
+          <th>File UUID</th>
+          <td>{{file.fileUUID}}</td>
+        </tr>
+        <tr>
+          <th>Expiration Time</th>
+          <td>{{file.expirationTime}}</td>
+        </tr>
+        <tr>
+          <th>Permission Type</th>
+          <td>{{file.permission}}</td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-md-3"></div>
+  </div>
+  <br>
+  <form class="form-horizontal" novalidate [formGroup]="shareForm" (ngSubmit)="onSubmit()">
+
+    <div class="form-group ">
+      <div class="row">
+        <div class="col-md-3 text-right"><b>Permit To:</b></div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <label class="radio-inline"><input type="radio" name="permission" formControlName="permission" value="ALL_USERS">ALL_USERS</label>
+            <label class="radio-inline"><input type="radio" name="permission" formControlName="permission" value="LIST_OF_USERS">LIST_OF_USERS</label>
+          </div>
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+    </div>
+
+    <div class="form-group ">
+      <div class="row">
+        <div class="col-md-3 text-right"><b>Users:</b></div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <div *ngFor="let user of users; let i=index">
+              <label class="control-label">
+                <input type="checkbox" value="{{user.id}}" (change)="onCheckChange($event)"/>
+                {{user.firstname}} {{user.lastname}} ({{user.email}})
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+          <button type="submit" class="btn btn-info btn-block" [disabled]="!shareForm.valid">Share</button>
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+    </div>
+    <br>
+    <br>
+    <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-6">
+        <pre>{{shareForm.value | json}}</pre>
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+  </form>
+
+
+</div>

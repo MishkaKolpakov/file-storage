@@ -1,0 +1,49 @@
+<div class="container">
+  <h1 class="text-center">Role Update</h1>
+  <br>
+  <h5 class="text-center">First Name: {{user.firstname}} </h5>
+  <h5 class="text-center">Last Name: {{user.lastname}} </h5>
+  <h5 class="text-center">Email: {{user.email}} </h5>
+  <br>
+  <form novalidate [formGroup]="roleForm" (ngSubmit)="onRoleSubmit()">
+    <div class="row">
+      <div class="form-group col-md-6 col-md-offset-3">
+        <div class="input-group">
+          <p><b>Role = {{user.role}}</b></p>
+
+          <div *ngIf="user.role == 'USER'">
+            <label class="radio-inline"><input type="radio" name="role" formControlName="role" value="USER" ng-checked="true">USER</label>
+          </div>
+          <div *ngIf="user.role != 'USER'">
+            <label class="radio-inline"><input type="radio" name="role" formControlName="role" value="USER">USER</label>
+          </div>
+
+          <div *ngIf="user.role == 'TECH_SUPP'">
+            <label class="radio-inline"><input type="radio" name="role" formControlName="role" value="TECH_SUPP" ng-checked="true">TECH_SUPP</label>
+          </div>
+          <div *ngIf="user.role != 'TECH_SUPP'">
+            <label class="radio-inline"><input type="radio" name="role" formControlName="role" value="TECH_SUPP">TECH_SUPP</label>
+          </div>
+
+          <div *ngIf="user.role == 'ADMIN'">
+            <label class="radio-inline"><input type="radio" name="role" formControlName="role" value="ADMIN" ng-checked="true">ADMIN</label>
+          </div>
+          <div *ngIf="user.role != 'ADMIN'">
+            <label class="radio-inline"><input type="radio" name="role" formControlName="role" value="ADMIN">ADMIN</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <button type="submit" class="btn btn-primary"  [disabled]="!roleForm.valid" >Submit</button>
+        <button type="button" class="btn btn-warning" (click)="redirectUserPage()">Cancel</button>
+        <pre>{{roleForm.value | json}}</pre>
+      </div>
+    </div>
+
+  </form>
+
+
+</div>

@@ -1,0 +1,58 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: file-service
+spec:
+  selector:
+    app: file-app
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: fileservice
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: file-app
+    spec:
+      containers:
+      - name: file-app
+        image: registry.gitlab.com/kv-030.java/fileservice:development
+        ports:
+        - containerPort: 8585
+        env:
+        - name: MONGODB_USER
+          value: fileuser
+        - name: MONGODB_PASSWORD
+          value: secret
+        - name: MONGODB_DATABASE
+          value: filedb
+        - name: MONGODB_HOST
+          value: mongo-service
+        - name: AWS_ID
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: aws_id
+        - name: AWS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: aws_key
+        - name: AWS_BUCKET
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: aws_bucket
+        - name: AWS_REGION
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: aws_region
+        imagePullPolicy: Always

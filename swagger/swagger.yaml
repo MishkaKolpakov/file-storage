@@ -1,0 +1,955 @@
+swagger: '2.0'
+info:
+  description: >-
+    Current API provides access to AuthService, which is a part of SecureFiles
+    project, which gives you powerfull tool to upload your files in completely
+    secure mode and share it with people you trust to see this absolutely secret
+    files.
+  version: 1.0.2
+  title: Auth Service
+  termsOfService: 'http://service-name-here/terms/'
+  contact:
+    email: apiteam@authservice.com
+host: 'localhost:8080'
+basePath: /v0
+produces:
+  - application/xml
+  - application/json
+tags:
+  - name: User
+    description: Basic user operations
+  - name: Authorization
+    description: Login and Logout
+  - name: Statistics
+    description: Statistic srvice
+schemes:
+  - http
+paths:
+  /users:
+    post:
+      consumes:
+        - application/xml
+        - application/json
+      tags:
+        - User
+      summary: Create new user
+      description: This endpoint allows to add new user.
+      operationId: addUser
+      parameters:
+        - in: body
+          name: user
+          description: Created user object
+          required: true
+          schema:
+            $ref: '#/definitions/UserCredentials'
+      responses:
+        '201':
+          description: user added
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: invalid input
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - authservice_auth:
+            - 'write:users'
+            - 'read:users'
+    get:
+      summary: List users by filter
+      description: This endpoint allows to get list of users searched by filter criteria.
+      operationId: listUsersByFilter
+      tags:
+        - User
+      parameters:
+        - name: filter
+          in: query
+          description: object with parameters by which to filter users
+          required: false
+          schema:
+              $ref: '#/definitions/UsersFilter'
+      responses:
+        '200':
+          description: a list of filtered users
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+  '/users/{userId}':
+    get:
+      summary: Get user by Id
+      description: This endpoint allows to get user by Id.
+      operationId: getUserById
+      parameters:
+        - name: userId
+          in: path
+          description: user Id to get by
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      tags:
+        - User
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      summary: Update user
+      description: Update existing user
+      operationId: updateUserById
+      parameters:
+        - name: userId
+          in: path
+          description: Id of user that will be updated
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: body
+          name: body
+          description: Updated user
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      tags:
+        - User
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Delete user from database
+      description: Deletes User
+      operationId: deleteUserById
+      parameters:
+        - name: userId
+          in: path
+          description: Id of user that will be deleted
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      tags:
+        - User
+      responses:
+        '200':
+          description: Removed
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - authservice_auth:
+            - 'write:users'
+            - 'read:users'
+
+  '/users/{userId}/pass':
+    put:
+      summary: Update user including password
+      description: Update existing user including password
+      operationId: updateUserCredentials
+      parameters:
+        - name: userId
+          in: path
+          description: Id of user that will be updated
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: body
+          name: userCredentials
+          description: Updated user credentials
+          required: true
+          schema:
+            $ref: '#/definitions/UserCredentials'
+      tags:
+        - User
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+
+  '/users/{userId}/role':
+    put:
+      summary: Update user role
+      description: Change existing user role
+      operationId: updateUserRole
+      parameters:
+        - name: userId
+          in: path
+          description: Id of user whose role to be updated
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - in: body
+          name: user
+          description: Updated user role
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      tags:
+        - User
+      responses:
+        '200':
+          description: role updated
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+
+  '/users/{userId}/activate':
+    patch:
+      summary: Activate user
+      description: Activates user
+      operationId: activateUser
+      parameters:
+        - name: userId
+          in: path
+          description: Id of user to be activated
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      tags:
+        - User
+      responses:
+        '200':
+          description: user activated
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: failed to activate user
+          schema:
+            $ref: '#/definitions/Error'
+
+  /users/list/{offset}/{limit}:
+    get:
+      tags:
+        - User
+      summary: Return list of users per page
+      description: This endpoint returns a list of users. The list is limited by offset and number of results on page
+      operationId: listUsersByOffsetAndPageLimit
+      parameters:
+        - name: offset
+          in: path
+          description: Position in pagination
+          required: true
+          type: integer
+          format: int32
+          minimum: 0
+        - name: limit
+          in: path
+          description: Number of items to retrieve (5 min, 50 max)
+          required: true
+          type: integer
+          format: int32
+          minimum: 5
+          maximum: 50
+      responses:
+        '200':
+          description: a list of users
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+        '400':
+          description: invalid input
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - authservice_auth:
+            - 'write:users'
+            - 'read:users'
+
+  /user/login:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - Authorization
+      summary: Login user
+      description: This endpoint allows to login.
+      operationId: loginUser
+      parameters:
+        - in: body
+          name: login
+          description: Login Information
+          required: true
+          schema:
+            $ref: '#/definitions/UserCredentials'
+      responses:
+        '200':
+          description: Login Success
+          schema:
+            $ref: '#/definitions/User'
+        '403':
+          description: invalid input
+          schema:
+            $ref: '#/definitions/Error'
+  /user/logout:
+    get:
+      tags:
+        - Authorization
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutUser
+      parameters: []
+      responses:
+        '200':
+          description: successfull logout
+        '403':
+          description: already logged out
+        default:
+          description: invalid input
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - authservice_auth:
+            - 'write:users'
+            - 'read:users'
+
+  /user/validate:
+    post:
+      summary: Validate JWT
+      description: This endpoint allows to validate users token for file service.
+      operationId: validate
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      tags:
+        - Authorization
+      parameters:
+        - in: body
+          name: token
+          description: JWT
+          required: true
+          schema:
+            $ref: '#/definitions/TokenValidationRequest'
+      responses:
+        '200':
+          description: "successful operation"
+        '401':
+          description: "Not authorize(token is not valid)"
+          schema:
+            $ref: '#/definitions/Error'
+
+  '/user/files/uploadFile':
+    post:
+      tags:
+        - File
+      summary: Uploads a file
+      description: Uploads a file, encrypts it and puts to store
+      operationId: uploadFile
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: web
+          in: header
+          description: Header form WebPages (Too long to encrypt/decrypt even small files so we will use ciferservice)
+          required: false
+          type: string
+          format: string
+        - name: fileMetadata
+          in: body
+          description: File metadata to pass to a server
+          required: true
+          schema:
+            $ref: '#/definitions/FileMetadata'
+        - name: file
+          in: formData
+          description: a file to upload
+          required: true
+          type: file
+      responses:
+        '201':
+          description: a file is uploaded
+          schema:
+            $ref: '#/definitions/FileMetadata'
+        '400':
+          description: failed to upload a file
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - authservice_auth:
+            - 'write:files'
+            - 'read:files'
+
+  '/user/files/permissionTypes':
+    get:
+      tags:
+        - File
+      summary: List of permission types(ALL_USERS, LIST_OF_USERS)
+      description: Returns a list of permission types (ALL_USERS, LIST_OF_USERS).
+      operationId: permissionTypes
+      responses:
+        '200':
+          description: permission types
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PermissionType'
+        '400':
+          description: failed
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - authservice_auth:
+            - 'write:files'
+            - 'read:files'
+  '/user/files/addFileMetadata':
+    post:
+      tags:
+        - File
+      summary: Store file metadata
+      description: Stores medatada of the file to be placed by client to file storage
+      operationId: addFileMetadata
+      consumes:
+        - application/xml
+        - application/json
+      parameters:
+        - name: fileMetadata
+          in: body
+          description: medatada of the file to be placed by client to file storage
+          required: true
+          schema:
+            $ref: '#/definitions/FileMetadata'
+      responses:
+        '201':
+          description: file metadata saved
+          schema:
+            $ref: '#/definitions/FileMetadata'
+        '400':
+          description: failed to save file metadata
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - authservice_auth:
+            - 'write:files'
+            - 'read:files'
+
+  '/files/{uuid}/url':
+    get:
+      tags:
+        - File
+      summary: Return URL from which a file can be downloaded
+      description: Returns URL from which a file can be downloaded (from AuthService or from FilesService)
+      operationId: fileURL
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: uuid
+          in: path
+          description: file metadata
+          required: true
+          type: string
+      responses:
+        '200':
+          description: file URL
+          schema:
+            type: string
+        '400':
+          description: failed to return file URL
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - authservice_auth:
+            - 'write:files'
+            - 'read:files'
+
+  '/files/{uuid}':
+    get:
+      tags:
+        - File
+      summary: Return a decrypted file
+      description: Downloads a file from file storage and returns a decrypted file
+      operationId: downloadFile
+      produces:
+        - application/octet-stream
+      parameters:
+        - name: desktop
+          in: header
+          description: Header form Desktop (Too long to decrypt locally)
+          required: false
+          type: string
+          format: string
+        - name: uuid
+          in: path
+          description: file uuid
+          required: true
+          type: string
+      responses:
+        '200':
+          description: file retrieved
+          schema:
+            type: file
+        '400':
+          description: failed to download file
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - authservice_auth:
+            - 'write:files'
+            - 'read:files'
+
+
+  '/user/{userId}/files':
+    get:
+      tags:
+        - File
+      summary: List files of the user per page
+      description: Returns a list of IDs and names of files owned by the user. List is limitted by offset and number of results per page.
+      operationId: listFilesByOffsetAndPageLimit
+      parameters:
+        - name: userId
+          in: path
+          description: ID of user to look for files.
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+        - name: offset
+          in: query
+          description: Position in pagination.
+          required: false
+          type: integer
+          format: int32
+          minimum: 0
+        - name: limit
+          in: query
+          description: Number of items to retrieve (5 min, 50 max).
+          required: false
+          type: integer
+          format: int32
+          minimum: 5
+          maximum: 50
+      responses:
+        '200':
+          description: a list of file's ID and name
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/FileMetadata'
+        '400':
+          description: failed to retrieve files
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - authservice_auth:
+            - 'write:files'
+            - 'read:files'
+
+  '/user/files':
+    get:
+      tags:
+        - File
+      summary: List files by filter
+      description: This endpoint allows to get list of files searched by filter criteria.
+      operationId: listFilesByFilter
+      parameters:
+        - name: filter
+          in: query
+          description: object with parameters by which to filter files
+          required: true
+          schema:
+              $ref: '#/definitions/FilesFilter'
+      responses:
+        '200':
+          description: a list of file
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/FileMetadata'
+        '400':
+          description: failed to retrieve files
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - authservice_auth:
+            - 'write:files'
+            - 'read:files'
+
+  '/user/files/{resourceId}/getFileMetadata':
+    get:
+      tags:
+        - File
+      summary: Show a file metadata
+      description: Shows a file metadata.
+      operationId: getFileMetadata
+      parameters:
+        - name: resourceId
+          in: path
+          description: ID of a file resource
+          required: true
+          type: integer
+          format: int64
+          minimum: 1
+      responses:
+        '200':
+          description: file metadata retrieved
+          schema:
+            $ref: '#/definitions/FileMetadata'
+        '400':
+          description: failed to retrieve file metadata
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - authservice_auth:
+            - 'write:files'
+            - 'read:files'
+
+  '/user/{userId}/files/{fileId}':
+    delete:
+      tags:
+        - File
+      summary: Delete a file
+      description: Deletes a file of the user.
+      operationId: deleteFile
+      parameters:
+        - name: userId
+          in: path
+          description: file owner
+          required: true
+          type: integer
+          format: int64
+        - name: fileId
+          in: path
+          description: file to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: file is deleted
+        '400':
+          description: failed to delete a file
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - authservice_auth:
+            - 'write:files'
+            - 'read:files'
+  '/user/files/share':
+    put:
+      tags:
+        - File
+      summary: Share a file
+      description: Shares a file with users permitted to download the file (all users or selected users).
+      operationId: shareFile
+      consumes:
+        - application/xml
+        - application/json
+      parameters:
+        - name: shareData
+          in: body
+          description: metadata of the file to be shared and list of user IDs
+          required: true
+          schema:
+            type: object
+            required:
+            - fileMetadata
+            properties:
+              fileMetadata:
+                $ref: '#/definitions/FileMetadata'
+              permittedUserIds:
+                description: list of IDs of users allowed to read a file
+                type: array
+                items:
+                  type: integer
+                  format: int64
+      responses:
+        '200':
+          description: file is shared
+        '400':
+          description: failed to share a file
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - authservice_auth:
+            - 'write:files'
+            - 'read:files'
+
+  '/stat/size/{userId}':
+    get:
+      tags:
+        - Statistics
+      summary: Get size of all uploaded files for this user
+      description: ''
+      operationId: statSize
+      parameters:
+        - name: "userId"
+          in: "path"
+          description: "ID of user to get statistics for"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: successfull operation
+          schema:
+            type: string
+        '400':
+          description: Bad request
+        default:
+          description: invalid input
+          schema:
+            $ref: '#/definitions/Error'
+
+securityDefinitions:
+  authservice_auth:
+    type: oauth2
+    authorizationUrl: 'http://projectname.com'
+    flow: implicit
+    scopes:
+      'write:users': modify users
+      'read:users': read users
+      'write:files': modify files
+      'read:files': read files
+  api_key:
+    type: apiKey
+    name: api_key
+    in: header
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      firstname:
+        type: string
+        minLength: 2
+        maxLength: 30
+      lastname:
+        type: string
+        minLength: 2
+        maxLength: 30
+      email:
+        type: string
+      role:
+        $ref: '#/definitions/Role'
+    xml:
+      name: User
+  UserCredentials:
+    type: object
+    required:
+      - password
+      - email
+    properties:
+      id:
+        type: integer
+        format: int64
+      firstname:
+        type: string
+        minLength: 2
+        maxLength: 30
+      lastname:
+        type: string
+        minLength: 2
+        maxLength: 30
+      email:
+        type: string
+      password:
+        type: string
+        minLength: 4
+        maxLength: 20
+      role:
+        $ref: '#/definitions/Role'
+    xml:
+      name: UserCredentials
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      type:
+        type: string
+      message:
+        type: string
+    xml:
+      name: Error
+
+  FileMetadata:
+    type: object
+    required:
+    - fileName
+    - fileSize
+    - mime
+    - expirationTime
+    properties:
+      resourceId:
+        type: integer
+        format: int64
+      ownerId:
+        type: integer
+        format: int64
+      fileUUID:
+        type: string
+      expirationTime:
+        type: string
+        format: date-time
+      fileSize:
+        type: integer
+        format: int64
+      fileName:
+        type: string
+      mime:
+        type: string
+      permission:
+        $ref: '#/definitions/PermissionType'
+      key:
+        type: string
+    xml:
+      name: FileMetadata
+
+  FileAuthLink:
+    type: object
+    required:
+    - resourceId
+    - fileName
+    properties:
+      resourceId:
+        type: integer
+        format: int64
+      fileName:
+        type: string
+    xml:
+      name: FileAuthLink
+
+  PermissionOptions:
+    type: object
+    required:
+    - permissions
+    - users
+    properties:
+      users:
+        type: array
+        items:
+          $ref: '#/definitions/User'
+      permissions:
+        type: array
+        items:
+          $ref: '#/definitions/PermissionType'
+    xml:
+      name: PermissionOptions
+
+  PermissionType:
+    type: string
+    enum:
+      - ALL_USERS
+      - LIST_OF_USERS
+
+  TokenValidationRequest:
+    type: object
+    properties:
+      token:
+        type: string
+
+  Role:
+    type: string
+    description: User athorization level
+    enum:
+      - ADMIN
+      - TECH_SUPP
+      - USER
+
+  UsersFilter:
+    type: object
+    properties:
+      offset:
+        type: integer
+        format: int32
+        minimum: 0
+        description: Position in pagination
+      limit:
+        type: integer
+        format: int32
+        minimum: 5
+        maximum: 50
+        description:  Number of items to retrieve (5 min, 50 max)
+      order:
+        type: string
+        enum: [ASC, DESC]
+        description: Order in which to sort list of users. By defauld sorted by ID
+      sortField:
+        type: string
+        enum: [userId, email, firstName, lastName]
+        description: Field in User by which to sort list of users
+      role:
+        $ref: '#/definitions/Role'
+      userStatus:
+        type: string
+        enum: [ACTIVE, DELETED]
+        default: ACTIVE
+        description: Status of user
+      passwordStatus:
+        type: string
+        enum: [ACTIVE, EXPIRED]
+        description: Status of user's password for ACTIVE users. For DELETED users password status is ignored.
+    xml:
+      name: UsersFilter
+  FilesFilter:
+    type: object
+    required:
+    - useId
+    - fileType
+    properties:
+      userId:
+        type: integer
+        format: int64
+        minimum: 1
+        description: ID of user to look for files
+      offset:
+        type: integer
+        format: int32
+        minimum: 0
+        description: Position in pagination
+      limit:
+        type: integer
+        format: int32
+        minimum: 5
+        maximum: 50
+        description:  Number of items to retrieve (5 min, 50 max)
+      order:
+        type: string
+        enum: [ASC, DESC]
+        description: Order in which to sort list of files. By defauld sorted by ID
+      sortField:
+        type: string
+        enum: [resourceId, fileName, expirationTime]
+        description: Field by which to sort list of files
+      permissionType:
+        type: string
+        enum: [NOT_SET, ALL_USERS, LIST_OF_USERS]
+      fileType:
+        type: string
+        enum: [OWN, SHARED]
+        description: Own is for files created by current user, Shared is for files that were shared with current user by other user
+    xml:
+      name: FilesFilter

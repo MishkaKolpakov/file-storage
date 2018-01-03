@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Auth Service</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+
+   
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Super Cloud Storage</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#userInfo">User Info</a></li>
+            <li><a href="#updown">Upload/download</a></li>
+            <li><a href="#share">Share</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+
+            <li id="loginPanel" class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Login<span class="caret"></span></a>
+                <ul id="login-dp" class="dropdown-menu">
+                    <li>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel-body">
+                                    <form id="loginForm">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Email</label>
+                                            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="email"
+                                                   required name="email">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">Password</label>
+                                            <input type="password" class="form-control" id="exampleInputPassword1"
+                                                   placeholder="password" required name="password">
+                                        </div>
+                                        <button type="submit" class="btn btn-default">login</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+            <li id="logoutPanel">
+                <!--<button type="button" class="btn btn-danger" id="logoutButton">Logout</button>-->
+                <a href="#" id="logoutButton"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="modal" data-target="#modal-register" href="#">
+                    <span class="glyphicon glyphicon-user"></span> Sign Up
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container" style="margin-top:50px" id="main-container">
+        <h1 align="center">Super Cloud Storage</h1>
+    <div class="alert alert-danger" id="notLoggedIn" align="center">Please sign in or login to use Super Cloud Storage!</div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div id="userInfo">
+                <h3>Information about user</h3>
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Authenticated user</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="userInfoBody"></div>
+                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#updateUser">Update User</button>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="loggedIn" class="col-md-6">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Token information (Only for testing because front end should never decode token!)</h3>
+                </div>
+                <div class="panel-body" id="loggedInBody"></div>
+            </div>
+        </div>
+     </div>
+
+    <div class="row" id="updown">
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3>Upload your File in complete secure</h3>
+                </div>
+                <div class="panel-body">
+                    <form method="post" enctype="multipart/form-data" id="fileUploadForm">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div>
+                                    <label class="btn btn-default btn-file" id="file-name">
+                                        Browse <input style="display: none;" align="center" type="file" name="file" id="fileId"
+                                                      onchange="($('#upload-file-info').val($(this).val().replace(/^.*\\/, '')));">
+                                    </label>
+                                </div>
+                                <br>
+                                <input type="text" class="form-control" id="upload-file-info" readonly width="50%">
+                                <br>
+                                <div class="form-group">
+                                    <div class='input-group date' id='datetimepicker1'>
+                                        <input type='text' class="form-control" name="expirationTime"/>
+                                        <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="col-sm-6">
+                            <label for="permission">Select people to share your file with</label><select name="permission" id="permission" class="form-control">
+                            <option value="ALL_USERS">All Users</option>
+                            <option value="LIST_OF_USERS">Choose users</option>
+                        </select>
+                            <div id="users">
+                                <label for="list_users">List of users</label>
+                                <select name="users" id="list_users" class="form-control" multiple>
+
+                                </select>
+                            </div>
+                        </div>
+                        </div>
+                        <input type="submit" align="center" value="Upload" id="btnSubmit" class="btn btn-default"/>
+                        <br>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3>Download File</h3>
+                </div>
+                <div class="panel-body">
+                    <form method="get" enctype="multipart/form-data" id="fileDownloadForm">
+                        <label for="uuidFile">Enter File UUID</label><input type="text" id="uuidFile" class="form-control" name="uuid"/>
+                        <br>
+                        <input type="submit" value="Download" id="btnSubmitDownload" class="btn btn-default"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    <br>
+
+</div>
+    <div class="row" id="resp">
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Response:</h3>
+                </div>
+                <div class="panel-body">
+                    <pre id="response"></pre>
+                </div>
+            </div>
+
+            <div class="btn-group" role="group" aria-label="..." style="margin-bottom: 16px;">
+                <button type="button" class="btn btn-default" id="exampleServiceBtn">Don't touch!</button>
+                <button type="button" class="btn btn-default" id="adminServiceBtn">Magical Admin Panel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="loader"></div>
+
+<!-- Error modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="loginErrorModal">
+    <div class="modal-dialog">
+        <div class="modal-content panel-warning">
+            <div class="modal-header panel-heading">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Login unsuccessful</h4>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- The modal Registration Form-->
+<div class="modal fade" id="modal-register" tabindex="-1" role="dialog" aria-labelledby="modalLabelLarge"
+     aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="modalLabelLarge">Registration</h4>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-horizontal" method="POST" id="register">
+
+                            <h2>Enter your data here</h2>
+                            <hr>
+                    <div class="form-group row">
+                        <label for="firstname" class="col-sm-3 col-form-label">Input your First Name:</label>
+                        <div class="col-sm-5" style="padding-left: 0">
+                            <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-user"></i></div>
+                                <input type="text" name="firstname" class="form-control" id="firstname"
+                                       placeholder="John" required autofocus>
+                            </div>
+                        </div>
+                        <div class="offset-4"></div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="lastname" class="col-sm-3 col-form-label">Input your Last Name:</label>
+                        <div class="col-sm-5" style="padding-left: 0">
+                            <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-user"></i></div>
+                                <input type="text" name="lastname" class="form-control" id="lastname"
+                                       placeholder="Doe" required autofocus>
+                            </div>
+                        </div>
+                        <div class="offset-4"></div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="email" class="col-sm-3 col-form-label">Input your email:</label>
+                        <div class="col-sm-5">
+                            <div class="form-group">
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-at"></i></div>
+                                    <input type="text" name="email" class="form-control" id="email"
+                                           placeholder="you@example.com" required autofocus>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="offset-4"></div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="password" class="col-sm-3 col-form-label">Input your password:</label>
+
+                            <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-key"></i></div>
+                                <input type="password" name="password" class="form-control" id="password"
+                                       placeholder="Password" required>
+                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <button type="submit" class="btn btn-primary" style="margin-left: 42.5%">Register</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--Ending of modal -->
+
+<!-- Update User Modal -->
+<div id="updateUser" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Update User</h4>
+            </div>
+            <div class="modal-body">
+                <form id="updateForm">
+                    <div class="form-group">
+                        <label for="updateFirstName">FirstName</label>
+                        <input type="text" class="form-control" id="updateFirstName" placeholder="FirstName"
+                               required name="updateFirstName">
+                    </div>
+                    <div class="form-group">
+                        <label for="updateLastName">LastName</label>
+                        <input type="text" class="form-control" id="updateLastName" placeholder="LastName"
+                               required name="updateLastName">
+                    </div>
+                    <div class="form-group">
+                        <label for="updateEmail">Email</label>
+                        <input type="text" class="form-control" id="updateEmail" placeholder="Email"
+                               required name="updateEmail">
+                    </div>
+                    <div class="form-group">
+                        <label for="updatePassword">Password</label>
+                        <input type="password" class="form-control" id="updatePassword"
+                               placeholder="updatePassword" required name="updatePassword">
+                    </div>
+                    <button type="submit" class="btn btn-default">Update</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/moment.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="js/libs/jwt-decode.min.js"></script>
+<script src="js/libs/binarytransport.js"></script>
+<script src="js/client.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+<!-- Plotly.js -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<!-- Numeric JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
+</body>
+</html>

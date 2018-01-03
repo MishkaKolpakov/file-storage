@@ -1,0 +1,71 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: rabbitmq
+spec:
+  selector:
+    app: rabbit
+  ports:
+  - protocol: TCP
+    port: 4369
+    name: rabbit-port1
+    targetPort: 4369
+  - protocol: TCP
+    port: 5672
+    name: rabbit-port2
+    targetPort: 5672
+  - protocol: TCP
+    port: 15672
+    name: rabbit-port3
+    targetPort: 15672
+  - protocol: TCP
+    port: 25672
+    name: rabbit-port4
+    targetPort: 25672
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rabbit
+    spec:
+      containers:
+      - name: rabbit
+        image: bitnami/rabbitmq
+        ports:
+        - containerPort: 4369
+        - containerPort: 5672
+        - containerPort: 15672
+        - containerPort: 25672
+        env:
+        - name: RABBITMQ_USERNAME
+          value: authuser
+        - name: RABBITMQ_PASSWORD
+          value: password
+        - name: RABBITMQ_NODE_NAME
+          value: rabbit@rabbitmq
+#        volumeMounts:
+#          - name: rabbit-persistent-storage
+#            mountPath: "/bitnami"
+#      volumes:
+#        - name: rabbit-persistent-storage
+#          persistentVolumeClaim:
+#            claimName: rabbit-pv-claim
+#---
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: rabbit-pv-claim
+#  labels:
+#    service: rabbitmq
+#spec:
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 1Gi

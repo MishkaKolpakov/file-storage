@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <property name="schema" value="AUTHDBSCHEMA"/>
+
+
+    <changeSet id="insertInitialValuesIntoRoleTable_2017.11.27" author="prog-user100">
+        <insert schemaName="${schema}" tableName="ROLES">
+            <column name="ROLE_NAME" value="ADMIN" />
+        </insert>
+        <insert schemaName="${schema}" tableName="ROLES">
+            <column name="ROLE_NAME" value="TECH_SUPP" />
+        </insert>
+        <insert schemaName="${schema}" tableName="ROLES">
+            <column name="ROLE_NAME" value="USER" />
+        </insert>
+        <rollback/>
+    </changeSet>
+
+    <changeSet id="insertInitialValuesIntoPermissionTable_2017.11.27" author="prog-user100">
+        <insert schemaName="${schema}" tableName="PERMISSIONS">
+            <column name="PERMISSION_NAME" value="ALL_USERS" />
+        </insert>
+        <insert schemaName="${schema}" tableName="PERMISSIONS">
+            <column name="PERMISSION_NAME" value="LIST_OF_USERS" />
+        </insert>
+        <rollback/>
+    </changeSet>
+
+    <changeSet id="createIndexOnEmail_2017.11.27" author="prog-user100">
+        <createIndex schemaName="${schema}" tableName="USERS" indexName="ind_email">
+            <column name="EMAIL" />
+        </createIndex>
+
+        <rollback>
+            <dropIndex schemaName="${schema}" tableName="USERS" indexName="ind_email" />
+        </rollback>
+    </changeSet>
+
+    <changeSet id="addFirstAdmin_2017.11.27" author="prog-user100">
+        <sqlFile dbms="postgresql" path="sql/insertDefaultAdminScript_postresql.sql" relativeToChangelogFile="true" stripComments="false" splitStatements="false"/>
+        <rollback/>
+    </changeSet>
+
+</databaseChangeLog>

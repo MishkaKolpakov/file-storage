@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <property name="schema" value="AUTHDBSCHEMA"/>
+
+    <changeSet id="addMetaDataToResource" author="Vladyslava Shevchuk">
+        <addColumn schemaName="${schema}" tableName="RESOURCE">
+            <column name="FILE_NAME" type="VARCHAR(45)"/>
+            <column name="SIZE" type="BIGINT"/>
+            <column name="MIME_TYPE" type="VARCHAR(45)"/>
+        </addColumn>
+
+        <addNotNullConstraint schemaName="${schema}" tableName="RESOURCE" columnName="FILE_NAME" columnDataType="VARCHAR(45)"/>
+        <addNotNullConstraint schemaName="${schema}" tableName="RESOURCE" columnName="MIME_TYPE" columnDataType="VARCHAR(45)"/>
+        <addNotNullConstraint schemaName="${schema}" tableName="RESOURCE" columnName="SIZE" columnDataType="BIGINT"/>
+
+        <rollback>
+            <dropColumn schemaName="${schema}" tableName="RESOURCE" columnName="FILE_NAME"/>
+            <dropColumn schemaName="${schema}" tableName="RESOURCE" columnName="SIZE"/>
+            <dropColumn schemaName="${schema}" tableName="RESOURCE" columnName="MIME_TYPE"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="refactorUsers" author="Vladyslava Shevchuk">
+
+        <!-- divide user_name into first_name and last_name-->
+        <dropColumn schemaName="${schema}" tableName="USERS" columnName="USER_NAME"/>
+        <addColumn schemaName="${schema}" tableName="USERS">
+            <column name="FIRST_NAME" type="VARCHAR(45)" />
+            <column name="LAST_NAME" type="VARCHAR(45)" />
+        </addColumn>
+
+        <addNotNullConstraint schemaName="${schema}" tableName="USERS" columnName="FIRST_NAME" columnDataType="VARCHAR(45)"/>
+        <addNotNullConstraint schemaName="${schema}" tableName="USERS" columnName="LAST_NAME" columnDataType="VARCHAR(45)"/>
+
+        <rollback>
+            <dropColumn schemaName="${schema}" tableName="USERS" columnName="FIRST_NAME"/>
+            <dropColumn schemaName="${schema}" tableName="USERS" columnName="LAST_NAME"/>
+
+            <addColumn schemaName="${schema}" tableName="USERS">
+                <column name="USER_NAME" type="VARCHAR(45)" />
+            </addColumn>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="addUniqueToFields" author="Vladyslava Shevchuk">
+        <addUniqueConstraint schemaName="${schema}" tableName="USERS" columnNames="EMAIL"/>
+        <addUniqueConstraint schemaName="${schema}" tableName="ROLES" columnNames="ROLE_NAME"/>
+        <addUniqueConstraint schemaName="${schema}" tableName="RESOURCE" columnNames="LINK_TO_FILE"/>
+        <addUniqueConstraint schemaName="${schema}" tableName="SECRET_KEY" columnNames="KEY_VALUE"/>
+        
+        <rollback>
+            <dropUniqueConstraint schemaName="${schema}" tableName="USERS" uniqueColumns="EMAIL"/>
+            <dropUniqueConstraint schemaName="${schema}" tableName="ROLES" uniqueColumns="ROLE_NAME"/>
+            <dropUniqueConstraint schemaName="${schema}" tableName="RESOURCE" uniqueColumns="LINK_TO_FILE"/>
+            <dropUniqueConstraint schemaName="${schema}" tableName="SECRET_KEY" uniqueColumns="KEY_VALUE"/>
+        </rollback>
+    </changeSet>
+
+
+    <changeSet id="changeUserPassRelation" author="Vladyslava Shevchuk">
+        <dropColumn schemaName="${schema}" tableName="USERS" columnName="PASSWORD_ID"/>
+        <addColumn schemaName="${schema}" tableName="PASSWORDS">
+            <column name="USER_ID" type="BIGINT" />
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableSchemaName="${schema}" baseTableName="PASSWORDS" baseColumnNames="USER_ID" constraintName="CASCADE"
+                                 referencedTableSchemaName="${schema}" referencedTableName="USERS" referencedColumnNames="USER_ID"/>
+
+        <rollback>
+            <dropColumn schemaName="${schema}" tableName="PASSWORDS" columnName="USER_ID"/>
+            <addColumn schemaName="${schema}" tableName="USERS">
+                <column name="PASSWORD_ID" type="BIGINT" />
+            </addColumn>
+
+            <addForeignKeyConstraint baseTableSchemaName="${schema}" baseTableName="USERS" baseColumnNames="PASSWORD_ID" constraintName="CASCADE"
+                                     referencedTableSchemaName="${schema}" referencedTableName="PASSWORDS" referencedColumnNames="PASSWORD_ID"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

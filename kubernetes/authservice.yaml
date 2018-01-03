@@ -1,0 +1,50 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth-app
+  ports:
+  - protocol: TCP
+    port: 8585
+    targetPort: 8585
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: authservice
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: auth-app
+    spec:
+      containers:
+      - name: auth-app
+        image: registry.gitlab.com/kv-030.java/authservice:development
+        ports:
+        - containerPort: 8585
+        env:
+        - name: POSTGRES_USER
+          value: authuser
+        - name: POSTGRES_PASSWORD
+          value: secret
+        - name: POSTGRES_DB
+          value: authdb
+        - name: POSTGRES_HOST
+          value: db-service
+        - name: FILESERVICE_HOST
+          value: file-service
+        - name: RABBIT_HOST
+          value: rabbitmq
+        - name: RABBIT_USER
+          value: authuser
+        - name: RABBIT_PASS
+          value: password
+        imagePullPolicy: Always
+      initContainers:
+      - name: init-authservice
+        image: postgres:9.6
+        command: ['sh', '-c', 'while ! pg_isready -h db-service -p 5432 > /dev/null 2> /dev/null; do echo "Waiting 5 seconds till postgres is up"; sleep 5; done;']

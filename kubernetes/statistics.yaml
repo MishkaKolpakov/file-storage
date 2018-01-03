@@ -1,0 +1,36 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: stats-service
+spec:
+  selector:
+    app: stats-app
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: statsservice
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: stats-app
+    spec:
+      containers:
+      - name: stats-app
+        image: registry.gitlab.com/kv-030.java/statisticsservice:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: RABBIT_USER
+          value: authuser
+        - name: RABBIT_PASS
+          value: password
+        - name: RABBIT_HOST
+          value: rabbitmq
+        imagePullPolicy: Always

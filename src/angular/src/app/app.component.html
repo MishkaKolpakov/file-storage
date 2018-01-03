@@ -1,0 +1,67 @@
+
+<div *ngIf="isLoggedIn();then logged_in_user_navbar else login_required">here is ignored</div>
+
+
+<ng-template #logged_in_user_navbar>
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Super Cloud Storage</a>
+      </div>
+      <!-- Links -->
+    <ul class="nav navbar-nav">
+      <div *ngIf="isAdmin();then admin_navbar_items ">here is ignored</div>
+
+      <div *ngIf="isUser();then user_navbar_items">here is ignored</div>
+    </ul>
+
+    <ul class="nav navbar-nav navbar-right">
+      <li class="nav-item"><a class="nav-link" routerLink="/users/profile/{{getId()}}">Profile</a></li>
+      <li><a (click)="logout()"><span class="fa fa-sign-out"></span>Logout</a></li>
+    </ul>
+    </div>
+  </nav>
+
+</ng-template>
+
+<ng-template #admin_navbar_items>
+  <li ><a routerLink="/">Home</a></li>
+  <li ><a routerLink="/files/list">My Files</a></li>
+  <li ><a routerLink="/files/shared">Send Me Files</a></li>
+  <li ><a routerLink="/users">List Users</a></li>
+  <li ><a routerLink="/users/add">Add new User</a></li>
+  <li ><a routerLink="/statistics">Statistic</a></li>
+</ng-template>
+
+<ng-template #user_navbar_items>
+  <li ><a routerLink="/">Home</a></li>
+  <li ><a routerLink="/files/list">My Files</a></li>
+  <li ><a routerLink="/files/shared">Send Me Files</a></li>
+  <li ><a routerLink="/statistics">Statistic</a></li>
+</ng-template>
+
+<ng-template #login_required>
+  <div class="jumbotron">
+    <div class="container text-center">
+      <h1>Welcome to Super Cloud Storage!</h1>
+      <p>Best Service in Universe!</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-6">
+        <div class="btn-group btn-group-justified btn-group-lg">
+          <a class="btn" routerLink="/login">Login</a>
+          <a class="btn" routerLink="/register">Register</a>
+        </div>
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+    <br>
+  </div>
+
+</ng-template>
+
+<router-outlet></router-outlet>
+
